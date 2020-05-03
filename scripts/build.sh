@@ -4,9 +4,10 @@ echo "Compiling functions to bin/handlers/ ..."
 
 rm -rf bin/
 
-cd lambda/
+cd handlers/
 for d in `ls -d */ | sed 's#/##'` ; do
-  if GOOS=linux go build -ldflags="-s -w" -o "../bin/$d" ${d}/main.go; then
+  if GOOS=linux go build -ldflags="-s -w" -o "../bin/handlers/$d" ${d}/main.go; then
+    upx "../bin/handlers/$d"
     echo "✓ Compiled $d"
   else
     echo "✕ Failed to compile $d!"

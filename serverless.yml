@@ -6,12 +6,23 @@ package:
   include:
   - ./bin/**
 
+plugins:
+  - serverless-pseudo-parameters
+  - serverless-domain-manager
+
 functions:
   Healthcheck:
-    handler: bin/Healthcheck
+    handler: bin/handlers/Healthcheck
     events:
       - http:
-          path: healthcheck
+          path: /healthcheck
+          method: get
+
+  Restricted:
+    handler: bin/handlers/Restricted
+    events:
+      - http:
+          path: /restricted
           method: get
 
 provider:
@@ -19,12 +30,19 @@ provider:
   runtime: go1.x
   profile: jponcProfile
   region: ${self:custom.${self:provider.stage}.region}
-  memorySize: 182
+  memorySize: 128
   stage: ${opt:stage, 'staging'}
 
 custom:
   tableName: kitecards-${self:provider.stage}
+  customDomain:
+    domainName: ${self:custom.${self:provider.stage}.domain}
+    basePath: ''
+    stage: ${self:provider.stage}
+    createRoute53Record: true
   staging:
+    domain: "api-staging.kitecards.com"
     region: "ap-southeast-2" # Sydney
   production:
+    domain: "api.kitecards.com"
     region: "ap-southeast-1" # Singapore
