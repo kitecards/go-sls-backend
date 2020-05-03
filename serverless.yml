@@ -1,0 +1,30 @@
+service: kitecards-sls
+
+package:
+  exclude:
+  - ./**
+  include:
+  - ./bin/**
+
+functions:
+  Healthcheck:
+    handler: bin/Healthcheck
+    events:
+      - http:
+          path: healthcheck
+          method: get
+
+provider:
+  name: aws
+  runtime: go1.x
+  profile: jponcProfile
+  region: ${self:custom.${self:provider.stage}.region}
+  memorySize: 182
+  stage: ${opt:stage, 'staging'}
+
+custom:
+  tableName: kitecards-${self:provider.stage}
+  staging:
+    region: "ap-southeast-2" # Sydney
+  production:
+    region: "ap-southeast-1" # Singapore
