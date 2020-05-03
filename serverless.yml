@@ -11,6 +11,11 @@ plugins:
   - serverless-domain-manager
 
 functions:
+  FirebaseAuthorizer:
+    handler: bin/handlers/FirebaseAuthorizer
+    environment:
+      FIREBASE_CONFIG: ${ssm:/${self:service}/${self:provider.stage}/FIREBASE_CONFIG~true}
+
   Healthcheck:
     handler: bin/handlers/Healthcheck
     events:
@@ -24,6 +29,7 @@ functions:
       - http:
           path: /restricted
           method: get
+          authorizer: FirebaseAuthorizer
 
 provider:
   name: aws
